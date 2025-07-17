@@ -12,7 +12,8 @@
     "build:tsc": "tsc",
     "dev": "rolldown -c rolldown.config.ts -w",
     "start": "node dist/cli.js",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "bump": "bumpp"
   },
   "keywords": [
     "mdbook",
