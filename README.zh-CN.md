@@ -49,6 +49,10 @@ mdbook-to-vitepress migrate /path/to/output/directory /path/to/mdbook/project --
 - **mdBook 扩展语法支持**：
   - 隐藏代码行 (`# 注释` → `// 注释`)（注：暂不支持自定义隐藏前缀）
   - 包含文件 (`{{#include file.rs}}` → `<<< file.rs`)
+    - 支持行范围 (`{{#include file.rs:10:20}}` → `<<< file.rs{10-20}`)
+    - 支持从某行到文件末尾 (`{{#include file.rs:10}}` → `<<< file.rs{10-}`)
+    - 支持从文件开头到某行 (`{{#include file.rs::10}}` → `<<< file.rs{1-10}`)
+    - 支持锚点标记 (`{{#include file.rs:tag:example}}`)，并提供转换指南
   - Rust 文档注释包含 (`{{#rustdoc_include file.rs}}` → `<<< file.rs`)
   - MathJax 数学公式支持 (自动配置 VitePress)
   - HTML 属性处理 (保留标题 ID，添加其他属性的注释)

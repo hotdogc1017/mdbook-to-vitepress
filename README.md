@@ -49,6 +49,14 @@ mdbook-to-vitepress migrate /path/to/output/directory /path/to/mdbook/project --
 - **mdBook syntax extension support**:
   - Hidden code lines (`# comment` → `// comment`) (Note: custom hide prefixes not yet supported)
   - Include files (`{{#include file.rs}}` → `<<< file.rs`)
+    - Supports line ranges (`{{#include file.rs:10:20}}` → `<<< file.rs{10-20}`)
+    - Supports from line to end of file (`{{#include file.rs:10}}` → `<<< file.rs{10-}`)
+    - Supports from start to specific line (`{{#include file.rs::10}}` → `<<< file.rs{1-10}`)
+    - Supports all mdBook anchor tag formats:
+      - Direct anchors: `{{#include file.rs:component}}`
+      - In code blocks: ```rust\n{{#include file.rs:component}}\n```
+    - Supports both ANCHOR/ANCHOR_END and #region/#endregion comment formats for marking sections
+    - Automatically extracts content from source files based on anchors
   - Rust doc comment includes (`{{#rustdoc_include file.rs}}` → `<<< file.rs`)
   - MathJax support (automatically configures VitePress)
   - HTML attributes (preserves heading IDs, adds comments for other attributes)

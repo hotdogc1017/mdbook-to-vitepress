@@ -10,11 +10,12 @@ export class MdBookSyntaxConverter {
   /**
    * 转换 markdown 文件内容
    * @param content 原始 markdown 内容
+   * @param filePath 当前处理的文件路径，用于解析相对路径
    * @returns 转换后的内容
    */
-  convert(content: string): string {
-    // 使用模块化的转换器处理内容
-    return transformMarkdown(content);
+  convert(content: string, filePath?: string): string {
+    // 使用模块化的转换器处理内容，传入文件路径
+    return transformMarkdown(content, filePath);
   }
   
   /**

@@ -1,1 +1,0 @@
-{"version":3,"file":"quote-blocks.d.ts","sourceRoot":"","sources":["../../../src/transformers/quote-blocks.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;;;;;;GASG;AACH,qBAAa,sBAAuB,YAAW,mBAAmB;IAChE,IAAI,SAAiB;IACrB,WAAW,SAAwC;IAEnD,SAAS,CAAC,OAAO,EAAE,MAAM,GAAG,MAAM;IAuClC;;OAEG;IACH,OAAO,CAAC,iBAAiB;IA4BzB;;OAEG;IACH,OAAO,CAAC,UAAU;CAYnB"}

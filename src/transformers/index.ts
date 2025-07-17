@@ -9,45 +9,50 @@ import { MarkdownTransformer, TransformerRegistry } from './types';
 
 /**
  * 创建转换器注册表
- * 包含所有可用的 Markdown 转换器
+ * 包含所有可用的 Markdown 转换器构造函数
  */
 export function createTransformerRegistry(): TransformerRegistry {
   return {
     // 隐藏代码行
-    'hidden-code-lines': new HiddenCodeLinesTransformer(),
+    'hidden-code-lines': HiddenCodeLinesTransformer,
     
     // 包含文件
-    'include-files': new IncludeFilesTransformer(),
+    'include-files': IncludeFilesTransformer,
     
     // Rust Playground 集成
-    'rust-playground': new RustPlaygroundTransformer(),
+    'rust-playground': RustPlaygroundTransformer,
     
     // HTML 属性
-    'html-attributes': new HtmlAttributesTransformer(),
+    'html-attributes': HtmlAttributesTransformer,
     
     // MathJax 支持
-    'mathjax': new MathJaxTransformer(),
+    'mathjax': MathJaxTransformer,
     
     // 引用块
-    'quote-blocks': new QuoteBlocksTransformer(),
+    'quote-blocks': QuoteBlocksTransformer,
     
     // 图片引用
-    'image-references': new ImageReferencesTransformer(),
+    'image-references': ImageReferencesTransformer,
   };
 }
 
 /**
  * 使用所有转换器转换 Markdown 内容
  * @param content 原始 Markdown 内容
+ * @param filePath 当前处理的文件路径，用于解析相对路径
  * @returns 转换后的内容
  */
-export function transformMarkdown(content: string): string {
+export function transformMarkdown(content: string, filePath?: string): string {
   const registry = createTransformerRegistry();
   let transformedContent = content;
   
   // 按顺序应用所有转换器
   for (const key in registry) {
-    transformedContent = registry[key].transform(transformedContent);
+    // 创建转换器实例，传入文件路径
+    const transformer = new registry[key](filePath);
+    
+    // 调用实例的 transform 方法，传入内容参数
+    transformedContent = transformer.transform(transformedContent);
   }
   
   return transformedContent;

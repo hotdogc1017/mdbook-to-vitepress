@@ -1,1 +1,0 @@
-{"version":3,"file":"image-references.d.ts","sourceRoot":"","sources":["../../../src/transformers/image-references.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;;;GAMG;AACH,qBAAa,0BAA2B,YAAW,mBAAmB;IACpE,IAAI,SAAqB;IACzB,WAAW,SAAyC;IAEpD,SAAS,CAAC,OAAO,EAAE,MAAM,GAAG,MAAM;IAmBlC;;OAEG;IACH,OAAO,CAAC,wBAAwB;CAuBjC"}

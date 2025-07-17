@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { copyFileSync, existsSync as existsSync$1, readFileSync as readFileSync$1, readdirSync, statSync, writeFileSync } from "fs";
-import { basename, extname, join as join$1 } from "path";
+import { basename, dirname as dirname$1, extname, join as join$1, resolve as resolve$1 } from "path";
 import { ensureDir } from "fs-extra";
 
 //#region src/toml-parser.ts
@@ -232,53 +232,173 @@ var ImageReferencesTransformer = class {
 //#region src/transformers/include-files.ts
 /**
 * 包含文件转换器
-* 将 mdBook 的包含文件语法转换为 VitePress 兼容的格式
+* 将 mdBook 的包含文件语法直接替换为实际的文件内容（硬编码方式）
 *
-* mdBook: {{#include file.rs}} 或 {{#include file.rs:10:20}}
-* VitePress: <<< file.rs 或 <<< file.rs{10-20}
+* mdBook 语法:
+* - {{#include file.rs}}                 // 包含整个文件
+* - {{#include file.rs:10:20}}           // 包含指定行范围
+* - {{#include file.rs:10}}              // 从指定行到文件末尾
+* - {{#include file.rs::10}}             // 从文件开头到指定行
+* - {{#include file.rs:component}}       // 包含锚点标记的内容
+* - {{#rustdoc_include file.rs}}         // 包含 Rust 文档注释
+*
+* 转换方式:
+* 直接将 {{#include}} 语法替换为实际的文件内容，避免路径转换的复杂性
+*
+* 锚点标记格式:
+* - // ANCHOR: name
+*   // 要包含的代码
+*   // ANCHOR_END: name
+*
+* - // #region name
+*   // 要包含的代码
+*   // #endregion name
 */
 var IncludeFilesTransformer = class {
 	name = "includeFiles";
-	description = "将 mdBook 的包含文件语法转换为 VitePress 的代码片段导入语法";
+	description = "将 mdBook 的包含文件语法直接替换为实际的文件内容（硬编码方式）";
+	filePath;
+	currentDir = process.cwd();
+	/**
+	* 构造函数
+	* @param filePath 要转换的文件路径，用于解析相对路径
+	*/
+	constructor(filePath) {
+		this.filePath = filePath;
+	}
+	/**
+	* 转换整个文档内容
+	* 如果提供了内容参数，则使用该内容
+	* 否则从文件路径读取内容
+	* @param content 可选的原始 Markdown 内容
+	* @returns 转换后的内容
+	*/
 	transform(content) {
-		content = content.replace(/\{\{#include\s+([^}]+)\}\}/g, (_, filePath) => {
-			return this.convertIncludeSyntax(filePath);
-		});
-		content = content.replace(/\{\{#rustdoc_include\s+([^}]+)\}\}/g, (_, filePath) => {
-			return this.convertIncludeSyntax(filePath);
-		});
+		if (!content) {
+			if (!this.filePath) throw new Error("未设置文件路径，无法读取文件内容");
+			try {
+				content = readFileSync$1(this.filePath, "utf-8");
+			} catch (error) {
+				console.error(`读取文件失败: ${this.filePath}`, error);
+				return `// 错误: 无法读取文件 ${this.filePath}`;
+			}
+		}
+		content = this.processCodeBlockIncludes(content);
+		content = this.processTextIncludes(content);
 		return content;
 	}
+	/**
+	* 转换单行内容
+	*/
 	transformLine(line) {
 		line = line.replace(/\{\{#include\s+([^}]+)\}\}/g, (_, filePath) => {
-			return this.convertIncludeSyntax(filePath);
+			return this.extractFileContent(filePath);
 		});
 		line = line.replace(/\{\{#rustdoc_include\s+([^}]+)\}\}/g, (_, filePath) => {
-			return this.convertIncludeSyntax(filePath);
+			return this.extractFileContent(filePath);
 		});
 		return line;
 	}
-	convertIncludeSyntax(filePath) {
-		if (filePath.includes("::")) {
-			const [path, endLine] = filePath.split("::");
-			let vitePressPath$1;
-			if (path.startsWith("./")) vitePressPath$1 = path.substring(2);
-			else vitePressPath$1 = path;
-			return `<<< ${vitePressPath$1}{1-${endLine}}`;
+	/**
+	* 处理普通文本中的包含语法
+	*/
+	processTextIncludes(content) {
+		content = content.replace(/\{\{#include\s+([^}]+)\}\}/g, (_, includePath) => {
+			return this.extractFileContent(includePath);
+		});
+		content = content.replace(/\{\{#rustdoc_include\s+([^}]+)\}\}/g, (_, includePath) => {
+			return this.extractFileContent(includePath);
+		});
+		return content;
+	}
+	/**
+	* 处理代码块中的 {{#include}} 语法
+	* 例如：```rust\n{{#include file.rs:component}}\n```
+	*/
+	processCodeBlockIncludes(content) {
+		const codeBlockRegex = /```([^\n]*)\n([\s\S]*?)```/g;
+		return content.replace(codeBlockRegex, (match, codeBlockInfo, codeBlockContent) => {
+			if (!codeBlockContent.includes("{{#include")) return match;
+			const processedContent = codeBlockContent.replace(/\{\{#include\s+([^}]+)\}\}/g, (_, includePath) => {
+				return this.extractFileContent(includePath);
+			});
+			if (processedContent !== codeBlockContent) return "```" + codeBlockInfo + "\n" + processedContent + "```";
+			return match;
+		});
+	}
+	/**
+	* 解析文件路径，支持相对路径
+	* 始终以当前处理的文件所在目录为起始点解析相对路径
+	*/
+	resolvePath(filePath) {
+		return resolve$1(this.currentDir, filePath);
+	}
+	/**
+	* 从文件内容中提取锚点标记的内容
+	* 支持 ANCHOR/ANCHOR_END 和 #region/#endregion 两种格式
+	*/
+	extractAnchorContent(content, anchorName) {
+		const anchorRegex = new RegExp(`ANCHOR:\\s*${anchorName}[^\\n]*\\n([\\s\\S]*?)ANCHOR_END:\\s*${anchorName}`, "i");
+		const anchorMatch = content.match(anchorRegex);
+		if (anchorMatch && anchorMatch[1]) return anchorMatch[1].trim();
+		const regionRegex = new RegExp(`#region\\s+${anchorName}[^\\n]*\\n([\\s\\S]*?)#endregion\\s+${anchorName}`, "i");
+		const regionMatch = content.match(regionRegex);
+		if (regionMatch && regionMatch[1]) return regionMatch[1].trim();
+		return null;
+	}
+	/**
+	* 提取文件内容，支持锚点和行范围
+	* 用于处理代码块中的 {{#include}} 语法
+	*/
+	extractFileContent(includePath) {
+		try {
+			const parts = includePath.split(":");
+			const includedFilePath = parts[0];
+			const dir = dirname$1(resolve$1(process.cwd(), this.filePath));
+			const resolvedPath = join$1(dir, includedFilePath);
+			console.log(resolvedPath, includedFilePath);
+			if (!existsSync$1(resolvedPath)) return `// 错误: 文件 ${includedFilePath} 不存在`;
+			const fileContent = readFileSync$1(resolvedPath, "utf-8");
+			if (parts.length === 1) return fileContent;
+			if (this.isLineReference(parts)) return this.extractLineContent(fileContent, parts);
+			else return this.extractAnchorContent(fileContent, parts[1]) || `// 错误: 在文件 ${includedFilePath} 中未找到锚点 '${parts[1]}'`;
+		} catch (error) {
+			console.error(`提取文件内容时出错: ${includePath}`, error);
+			return `// 错误: 处理 ${includePath} 时出错`;
 		}
-		const parts = filePath.split(":");
-		const cleanPath = parts[0];
-		let vitePressPath;
-		if (cleanPath.startsWith("./")) vitePressPath = cleanPath.substring(2);
-		else vitePressPath = cleanPath;
+	}
+	/**
+	* 判断是否为行引用
+	* 行引用格式: file.rs:10, file.rs:10:20, file.rs::10
+	*/
+	isLineReference(parts) {
+		if (parts.length === 2 && parts[1].startsWith(":") && /^\d+$/.test(parts[1].substring(1))) return true;
+		if (parts.length === 2 && /^\d+$/.test(parts[1])) return true;
+		if (parts.length === 3 && /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) return true;
+		return false;
+	}
+	/**
+	* 提取指定行范围的内容
+	*/
+	extractLineContent(fileContent, parts) {
+		const lines = fileContent.split("\n");
+		if (parts.length === 2 && parts[1].startsWith(":")) {
+			const endLine = parseInt(parts[1].substring(1), 10);
+			if (endLine > lines.length) return `// 错误: 行号 ${endLine} 超出文件范围`;
+			return lines.slice(0, endLine).join("\n");
+		}
+		if (parts.length === 2) {
+			const startLine = parseInt(parts[1], 10);
+			if (startLine > lines.length) return `// 错误: 行号 ${startLine} 超出文件范围`;
+			return lines.slice(startLine - 1).join("\n");
+		}
 		if (parts.length === 3) {
-			const startLine = parts[1];
-			const endLine = parts[2];
-			return `<<< ${vitePressPath}{${startLine}-${endLine}}`;
-		} else if (parts.length === 2) {
-			const startLine = parts[1];
-			return `<<< ${vitePressPath}{${startLine}-}`;
-		} else return `<<< ${vitePressPath}`;
+			const startLine = parseInt(parts[1], 10);
+			const endLine = parseInt(parts[2], 10);
+			if (startLine > lines.length || endLine > lines.length) return `// 错误: 行号范围 ${startLine}:${endLine} 超出文件范围`;
+			return lines.slice(startLine - 1, endLine).join("\n");
+		}
+		return fileContent;
 	}
 };
 
@@ -456,28 +576,32 @@ var RustPlaygroundTransformer = class {
 //#region src/transformers/index.ts
 /**
 * 创建转换器注册表
-* 包含所有可用的 Markdown 转换器
+* 包含所有可用的 Markdown 转换器构造函数
 */
 function createTransformerRegistry() {
 	return {
-		"hidden-code-lines": new HiddenCodeLinesTransformer(),
-		"include-files": new IncludeFilesTransformer(),
-		"rust-playground": new RustPlaygroundTransformer(),
-		"html-attributes": new HtmlAttributesTransformer(),
-		"mathjax": new MathJaxTransformer(),
-		"quote-blocks": new QuoteBlocksTransformer(),
-		"image-references": new ImageReferencesTransformer()
+		"hidden-code-lines": HiddenCodeLinesTransformer,
+		"include-files": IncludeFilesTransformer,
+		"rust-playground": RustPlaygroundTransformer,
+		"html-attributes": HtmlAttributesTransformer,
+		"mathjax": MathJaxTransformer,
+		"quote-blocks": QuoteBlocksTransformer,
+		"image-references": ImageReferencesTransformer
 	};
 }
 /**
 * 使用所有转换器转换 Markdown 内容
 * @param content 原始 Markdown 内容
+* @param filePath 当前处理的文件路径，用于解析相对路径
 * @returns 转换后的内容
 */
-function transformMarkdown(content) {
+function transformMarkdown(content, filePath) {
 	const registry = createTransformerRegistry();
 	let transformedContent = content;
-	for (const key in registry) transformedContent = registry[key].transform(transformedContent);
+	for (const key in registry) {
+		const transformer = new registry[key](filePath);
+		transformedContent = transformer.transform(transformedContent);
+	}
 	return transformedContent;
 }
 
@@ -492,10 +616,11 @@ var MdBookSyntaxConverter = class {
 	/**
 	* 转换 markdown 文件内容
 	* @param content 原始 markdown 内容
+	* @param filePath 当前处理的文件路径，用于解析相对路径
 	* @returns 转换后的内容
 	*/
-	convert(content) {
-		return transformMarkdown(content);
+	convert(content, filePath) {
+		return transformMarkdown(content, filePath);
 	}
 	/**
 	* 获取 VitePress 配置中需要添加的 MathJax 配置
@@ -786,7 +911,7 @@ export default defineConfig(${configString})
 			let content = readFileSync$1(sourcePath, "utf-8");
 			console.log(`转换文件: ${basename(sourcePath)}`);
 			console.log(`文件大小: ${content.length} 字节`);
-			content = this.syntaxConverter.convert(content);
+			content = this.syntaxConverter.convert(content, sourcePath);
 			writeFileSync(targetPath, content, "utf-8");
 			console.log(`已转换: ${basename(sourcePath)}`);
 		} catch (error) {

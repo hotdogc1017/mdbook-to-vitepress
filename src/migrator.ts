@@ -429,7 +429,8 @@ export default defineConfig(${configString})
       console.log(`文件大小: ${content.length} 字节`);
       
       // 使用语法转换器转换 mdbook 特有的语法到 VitePress 兼容格式
-      content = this.syntaxConverter.convert(content);
+      // 传入源文件路径，用于解析相对路径
+      content = this.syntaxConverter.convert(content, sourcePath);
       
       // 写入转换后的文件
       writeFileSync(targetPath, content, "utf-8");

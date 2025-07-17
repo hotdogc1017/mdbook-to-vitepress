@@ -1,1 +1,0 @@
-{"version":3,"file":"include-files.d.ts","sourceRoot":"","sources":["../../../src/transformers/include-files.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;;;GAMG;AACH,qBAAa,uBAAwB,YAAW,mBAAmB;IACjE,IAAI,SAAkB;IACtB,WAAW,SAA6C;IAExD,SAAS,CAAC,OAAO,EAAE,MAAM,GAAG,MAAM;IAclC,aAAa,CAAC,IAAI,EAAE,MAAM,GAAG,MAAM;IAcnC,OAAO,CAAC,oBAAoB;CA2B7B"}

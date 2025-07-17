@@ -1,1 +1,0 @@
-{"version":3,"file":"hidden-code-lines.d.ts","sourceRoot":"","sources":["../../../src/transformers/hidden-code-lines.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;;;GAMG;AACH,qBAAa,0BAA2B,YAAW,mBAAmB;IACpE,IAAI,SAAqB;IACzB,WAAW,SAA4B;IAEvC,SAAS,CAAC,OAAO,EAAE,MAAM,GAAG,MAAM;IAyBlC,aAAa,CAAC,IAAI,EAAE,MAAM,GAAG,MAAM;CAOpC"}

@@ -4,11 +4,12 @@
  */
 export interface MarkdownTransformer {
   /**
-   * 转换整个文档内容
-   * @param content 原始 Markdown 内容
+   * 转换文件内容
+   * 可以接收内容参数或者从文件路径读取内容
+   * @param content 可选的原始 Markdown 内容
    * @returns 转换后的内容
    */
-  transform(content: string): string;
+  transform(content?: string): string;
   
   /**
    * 转换单行内容
@@ -29,10 +30,22 @@ export interface MarkdownTransformer {
 }
 
 /**
- * 转换器注册表类型
- * 用于存储所有可用的转换器
+ * Markdown 转换器构造函数类型
+ * 用于创建转换器实例
  */
-export type TransformerRegistry = Record<string, MarkdownTransformer>;
+export interface MarkdownTransformerConstructor {
+  /**
+   * 创建一个新的转换器实例
+   * @param filePath 要转换的文件路径，用于解析相对路径
+   */
+  new (filePath?: string): MarkdownTransformer;
+}
+
+/**
+ * 转换器注册表类型
+ * 用于存储所有可用的转换器构造函数
+ */
+export type TransformerRegistry = Record<string, MarkdownTransformerConstructor>;
 
 /**
  * 代码块信息类型
