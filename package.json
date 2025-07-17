@@ -11,9 +11,10 @@
     "build": "rolldown -c rolldown.config.ts",
     "build:tsc": "tsc",
     "dev": "rolldown -c rolldown.config.ts -w",
-    "start": "node dist/cli.js",
-    "clean": "rm -rf dist",
-    "bump": "bumpp"
+    "bump": "bumpp",
+    "test:clean": "rimraf test_output_full test_output",
+    "test:full": "rimraf test_output_full && node dist/cli.js migratetest_output_full test_mdbook ",
+    "test:files-only": "rimraf test_output && node dist/cli.js migrate --files-only test_output test_mdbook"
   },
   "keywords": [
     "mdbook",
@@ -27,6 +28,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.0.0",
     "bumpp": "^10.2.0",
+    "rimraf": "^6.0.1",
     "rolldown": "^1.0.0-beta.27",
     "typescript": "^5.0.0"
   },
