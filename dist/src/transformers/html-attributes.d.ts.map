@@ -1,0 +1,1 @@
+{"version":3,"file":"html-attributes.d.ts","sourceRoot":"","sources":["../../../src/transformers/html-attributes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAE9C;;;;;;GAMG;AACH,qBAAa,yBAA0B,YAAW,mBAAmB;IACnE,IAAI,SAAoB;IACxB,WAAW,SAA6C;IAExD,SAAS,CAAC,OAAO,EAAE,MAAM,GAAG,MAAM;CA8BnC"}
