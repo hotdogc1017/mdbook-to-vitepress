@@ -1,6 +1,6 @@
 {
   "name": "mdbook-to-vitepress",
-  "version": "0.0.0-beta.9.0",
+  "version": "0.0.0-beta.4",
   "description": "将 mdbook 项目迁移到 VitePress 的工具",
   "type": "module",
   "main": "dist/index.js",
