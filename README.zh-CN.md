@@ -47,7 +47,7 @@ mdbook-to-vitepress migrate /path/to/output/directory /path/to/mdbook/project --
 - **图片引用转换**：自动转换 markdown 和 HTML 中的图片引用路径
 - **正确的配置生成**：生成格式正确的 VitePress 配置文件
 - **mdBook 扩展语法支持**：
-  - 隐藏代码行 (`# 注释` → `// 注释`)
+  - 隐藏代码行 (`# 注释` → `// 注释`)（注：暂不支持自定义隐藏前缀）
   - 包含文件 (`{{#include file.rs}}` → `<<< file.rs`)
   - Rust 文档注释包含 (`{{#rustdoc_include file.rs}}` → `<<< file.rs`)
   - MathJax 数学公式支持 (自动配置 VitePress)

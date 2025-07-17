@@ -47,7 +47,7 @@ mdbook-to-vitepress migrate /path/to/output/directory /path/to/mdbook/project --
 - **Image reference conversion**: Automatically converts image references in markdown and HTML
 - **Proper configuration generation**: Generates correctly formatted VitePress configuration files
 - **mdBook syntax extension support**:
-  - Hidden code lines (`# comment` → `// comment`)
+  - Hidden code lines (`# comment` → `// comment`) (Note: custom hide prefixes not yet supported)
   - Include files (`{{#include file.rs}}` → `<<< file.rs`)
   - Rust doc comment includes (`{{#rustdoc_include file.rs}}` → `<<< file.rs`)
   - MathJax support (automatically configures VitePress)

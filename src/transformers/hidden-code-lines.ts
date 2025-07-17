@@ -6,10 +6,16 @@ import { MarkdownTransformer } from './types';
  * 
  * mdBook: # 这是隐藏的代码行
  * VitePress: // 这是隐藏的代码行
+ * 
+ * 注意：目前仅支持默认的 # 前缀，暂不支持以下功能：
+ * 1. 全局自定义隐藏前缀 (book.toml 中的 hide-code-lines-prefix 配置)
+ * 2. 局部自定义隐藏前缀 (```rust,prefix_lines=// 语法)
+ * 
+ * 这些功能将在未来版本中添加。
  */
 export class HiddenCodeLinesTransformer implements MarkdownTransformer {
   name = 'hiddenCodeLines';
-  description = '将 mdBook 的隐藏代码行语法转换为注释';
+  description = '将 mdBook 的隐藏代码行语法转换为注释，仅支持默认的 # 前缀';
 
   transform(content: string): string {
     const lines = content.split('\n');
