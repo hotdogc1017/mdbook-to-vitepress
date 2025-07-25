@@ -1,9 +1,0 @@
-[book]
-title = "Test Documentation"
-description = "A test documentation site"
-
-[output.html.code.hidelines]
-python = "~"
-
-[output.html.playground]
-runnable = false

@@ -1,42 +1,34 @@
 {
   "name": "mdbook-to-vitepress",
   "version": "0.0.0-beta.5",
-  "description": "将 mdbook 项目迁移到 VitePress 的工具",
+  "description": "mdBook to VitePress converter",
   "type": "module",
-  "main": "dist/index.js",
-  "bin": {
-    "mdbook-to-vitepress": "dist/cli.js"
-  },
-  "scripts": {
-    "build": "rolldown -c rolldown.config.ts",
-    "build:tsc": "tsc",
-    "dev": "rolldown -c rolldown.config.ts -w",
-    "bump": "bumpp",
-    "test:clean": "rimraf test_output_full test_output",
-    "test:full": "rimraf test_output_full && node dist/cli.js migratetest_output_full test_mdbook ",
-    "test:files-only": "rimraf test_output && node dist/cli.js migrate --files-only test_output test_mdbook"
-  },
   "keywords": [
     "mdbook",
     "vitepress",
-    "迁移",
-    "文档"
+    "migrate",
+    "document"
   ],
-  "author": "",
+  "author": "hotdogc1017@gmail.com",
   "license": "MIT",
-  "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.0.0",
-    "bumpp": "^10.2.0",
-    "rimraf": "^6.0.1",
-    "rolldown": "^1.0.0-beta.27",
-    "typescript": "^5.0.0",
-    "vitepress": "^1.6.3"
+  "bin": {
+    "mdbook-to-vitepress": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsdown -w",
+    "build": "tsdown",
+    "bump": "bumpp"
   },
   "dependencies": {
     "commander": "^11.0.0",
-    "confbox": "^0.2.2",
-    "fs-extra": "^11.0.0",
-    "yaml": "^2.3.0"
+    "confbox": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "bumpp": "^10.2.0",
+    "markdown-it-mdbook": "file:../markdown-it-mdbook",
+    "rimraf": "^6.0.1",
+    "tsdown": "^0.13.0",
+    "vitepress": "^1.6.3"
   }
 }
