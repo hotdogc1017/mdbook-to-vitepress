@@ -1,23 +1,33 @@
 import fs from "node:fs";
-import type { BookConfig } from "./bookToml";
+import path from "node:path";
+import { DEFAULT_BOOK_CONFIG, type BookConfig } from "./bookToml";
 import type { VitepressSidebar, VitepressSidebarItem } from "./vitepress";
+import util from "node:util";
 
 export type Chapter = {
   _level: number;
   items: Chapter[];
 } & VitepressSidebarItem;
 
-export function parseSummaryMd(config: BookConfig): VitepressSidebar {
-  const summaryPath = config.book.src;
+export function parseSummaryMd(
+  sourcePath: string,
+  config: BookConfig,
+): VitepressSidebar {
+  const summaryPath = path.resolve(
+    sourcePath,
+    config.book.src ?? DEFAULT_BOOK_CONFIG.book.src,
+    "SUMMARY.md",
+  );
+
   if (!fs.existsSync(summaryPath)) {
-    console.warn("未找到 SUMMARY.md");
+    console.warn("Not found SUMMARY.md");
     return [];
   }
   try {
     const summaryContent = fs.readFileSync(summaryPath, "utf-8");
     return extractChaptersToSidebar(summaryContent);
   } catch (error) {
-    console.error("解析 SUMMARY.md 时出错:", error);
+    console.error("Error parsing SUMMARY.md:", error);
     return [];
   }
 }
@@ -30,14 +40,14 @@ export function extractChaptersToSidebar(summaryContent: string) {
   if (parsedChapters.length === 0) return [];
 
   const group = (chapters: Chapter[]) => {
-    // 如果每个level都相同，则直接返回
+    // if each level is the same, return the chapters
     if (
       Array.from(new Set(chapters.map(({ _level }) => _level))).length === 1
     ) {
-      return chapters.map(({ items, ...rest }) => rest);
+      return chapters.map(({ items, _level, ...rest }) => rest);
     }
     const minLevel = Math.min(...chapters.map(({ _level }) => _level));
-    const flatChapters: Chapter[] = [];
+    let flatChapters: Chapter[] = [];
     let currentChapter: Chapter | undefined;
     for (const chapter of chapters) {
       if (chapter._level === minLevel) {
@@ -48,9 +58,10 @@ export function extractChaptersToSidebar(summaryContent: string) {
       }
     }
 
-    flatChapters.map((chapter) => {
+    flatChapters = flatChapters.map((chapter) => {
+      const { _level, ...rest } = chapter;
       return {
-        ...chapter,
+        ...rest,
         items: group(chapter.items),
       };
     });
@@ -63,7 +74,7 @@ export function extractChaptersToSidebar(summaryContent: string) {
 
 export function statChapter(chapter: string): Chapter {
   if (!isChapter(chapter)) {
-    throw new Error(`${chapter} 不是一个章节`);
+    throw new Error(`${chapter} is not a chapter`);
   }
   const [_, text, link] = chapter.match(/\[([^\]]+)\]\(([^)]*)\)/) ?? [];
   return {

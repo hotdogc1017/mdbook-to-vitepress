@@ -17,6 +17,7 @@ export const DEFAULT_BOOK_CONFIG: BookConfig = {
 export function parseBookToml(basePath?: string): BookConfig {
   let bookConfig = DEFAULT_BOOK_CONFIG;
   const bookTomlPath = findBookTomlPath(basePath);
+
   if (bookTomlPath) {
     const bookTomlContent = fs.readFileSync(bookTomlPath, {
       encoding: "utf-8",
@@ -24,18 +25,14 @@ export function parseBookToml(basePath?: string): BookConfig {
     bookConfig = parseTOML(bookTomlContent);
   }
 
-  bookConfig.book.src = path.join(
-    process.cwd(),
-    bookConfig.book.src ?? DEFAULT_BOOK_CONFIG.book.src,
-  );
   return bookConfig;
 }
 
 export function findBookTomlPath(destPath?: string): string | undefined {
   destPath ??= process.cwd();
-  // 如果当前目录下已存在book.toml文件则直接返回
-  if (fs.existsSync(path.join(destPath, "book.toml"))) {
-    return path.join(destPath, "book.toml");
+  const tomlPath = path.resolve(destPath, "book.toml");
+  if (fs.existsSync(tomlPath)) {
+    return tomlPath;
   }
   let bookTomlPath: string | undefined;
   for (const file of fs.readdirSync(destPath)) {
@@ -43,13 +40,14 @@ export function findBookTomlPath(destPath?: string): string | undefined {
     if (!fileState.isDirectory()) {
       continue;
     }
-    const targetPath = findBookTomlPath(path.join(destPath, file));
+    const targetPath = findBookTomlPath(path.resolve(destPath, file));
     if (!targetPath) {
       continue;
     } else {
       bookTomlPath = targetPath;
     }
   }
+
   return bookTomlPath;
 }
 
@@ -83,7 +81,7 @@ export interface BookConfig {
    */
   book: {
     /**
-     * 源文件目录，默认为 "src"，在解析时会转换为绝对路径。
+     * 源文件目录，默认为 "src"
      */
     src: string;
     title?: string;

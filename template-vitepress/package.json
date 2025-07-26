@@ -1,0 +1,12 @@
+{
+  "name": "vitepress template by mbBook",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "vitepress": "latest",
+    "markdown-it-mdbook": "latest"
+  }
+}

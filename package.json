@@ -17,7 +17,8 @@
   "scripts": {
     "dev": "tsdown -w",
     "build": "tsdown",
-    "bump": "bumpp"
+    "bump": "bumpp",
+    "test:gen": "node dist/index.js template-mdbook .output"
   },
   "dependencies": {
     "commander": "^11.0.0",
@@ -27,8 +28,10 @@
     "@types/node": "^22.16.5",
     "bumpp": "^10.2.0",
     "markdown-it-mdbook": "file:../markdown-it-mdbook",
+    "picocolors": "^1.1.1",
     "rimraf": "^6.0.1",
     "tsdown": "^0.13.0",
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.3",
+    "vitest": "^3.2.4"
   }
 }

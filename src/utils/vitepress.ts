@@ -8,7 +8,10 @@ export type VitepressConfig = UserConfig<DefaultTheme.Config>;
 export type VitepressSidebar = DefaultTheme.Sidebar;
 export type VitepressSidebarItem = DefaultTheme.SidebarItem;
 
-export function buildVitepressConfig(bookConfig: BookConfig): VitepressConfig {
+export function buildVitepressConfig(
+  sourcePath: string,
+  bookConfig: BookConfig,
+): VitepressConfig {
   const vitepressConfig: VitepressConfig = {
     title: bookConfig.book.title,
     description: bookConfig.book.description,
@@ -25,7 +28,7 @@ export function buildVitepressConfig(bookConfig: BookConfig): VitepressConfig {
       },
     },
     themeConfig: {
-      sidebar: parseSummaryMd(bookConfig),
+      sidebar: parseSummaryMd(sourcePath, bookConfig),
     },
   };
   return vitepressConfig;
