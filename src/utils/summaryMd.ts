@@ -1,8 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import { DEFAULT_BOOK_CONFIG, type BookConfig } from "./bookToml";
-import type { VitepressSidebar, VitepressSidebarItem } from "./vitepress";
-import util from "node:util";
+import type { UserConfig, DefaultTheme } from "vitepress";
+
+export type VitepressConfig = UserConfig<DefaultTheme.Config>;
+export type VitepressSidebar = DefaultTheme.Sidebar;
+export type VitepressSidebarItem = DefaultTheme.SidebarItem;
 
 export type Chapter = {
   _level: number;
@@ -11,13 +13,10 @@ export type Chapter = {
 
 export function parseSummaryMd(
   sourcePath: string,
-  config: BookConfig,
+  baseDir?: string,
 ): VitepressSidebar {
-  const summaryPath = path.resolve(
-    sourcePath,
-    config.book.src ?? DEFAULT_BOOK_CONFIG.book.src,
-    "SUMMARY.md",
-  );
+  baseDir ??= "";
+  const summaryPath = path.resolve(sourcePath, "SUMMARY.md");
 
   if (!fs.existsSync(summaryPath)) {
     console.warn("Not found SUMMARY.md");
@@ -25,14 +24,17 @@ export function parseSummaryMd(
   }
   try {
     const summaryContent = fs.readFileSync(summaryPath, "utf-8");
-    return extractChaptersToSidebar(summaryContent);
+    return extractChaptersToSidebar(summaryContent, baseDir);
   } catch (error) {
     console.error("Error parsing SUMMARY.md:", error);
     return [];
   }
 }
 
-export function extractChaptersToSidebar(summaryContent: string) {
+export function extractChaptersToSidebar(
+  summaryContent: string,
+  baseDir: string,
+) {
   const parsedChapters = summaryContent
     .split("\n")
     .filter(isChapter)
@@ -44,7 +46,10 @@ export function extractChaptersToSidebar(summaryContent: string) {
     if (
       Array.from(new Set(chapters.map(({ _level }) => _level))).length === 1
     ) {
-      return chapters.map(({ items, _level, ...rest }) => rest);
+      return chapters.map(({ items, _level, ...rest }) => ({
+        ...rest,
+        link: `${baseDir}/${rest.link}`,
+      }));
     }
     const minLevel = Math.min(...chapters.map(({ _level }) => _level));
     let flatChapters: Chapter[] = [];
@@ -58,10 +63,12 @@ export function extractChaptersToSidebar(summaryContent: string) {
       }
     }
 
+    // @ts-ignore
     flatChapters = flatChapters.map((chapter) => {
       const { _level, ...rest } = chapter;
       return {
         ...rest,
+        link: `${baseDir}/${rest.link}`,
         items: group(chapter.items),
       };
     });

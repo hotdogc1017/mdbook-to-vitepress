@@ -1,5 +1,6 @@
 {
   "name": "vitepress template by mbBook",
+  "type": "module",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",

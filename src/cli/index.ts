@@ -8,6 +8,10 @@ const program = new Command();
 program
   .name("mdbook-to-vitepress")
   .description("mdBook to VitePress converter")
+  .option(
+    "-i, --including-files-dir [dir]",
+    "Including files directory, which based on the mdbook project directory",
+  )
   .version(pkg.version, "-v, --version", "show version")
   .argument(
     "[source]",

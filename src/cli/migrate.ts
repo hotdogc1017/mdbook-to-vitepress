@@ -10,7 +10,12 @@ import {
 } from "@/utils/bookToml";
 import { parseSummaryMd } from "@/utils/summaryMd";
 
-interface MigrationOptions {}
+interface MigrationOptions {
+  /**
+   * Including files directory, which based on the mdbook project directory
+   */
+  includingFilesDir?: string;
+}
 
 const cwd = process.cwd();
 
@@ -31,7 +36,7 @@ export function migrate(
     process.exit(1);
   }
 
-  const bookConfig = parseBookToml(sourcePath);
+  const bookConfig = { ...DEFAULT_BOOK_CONFIG, ...parseBookToml(sourcePath) };
 
   const templatePath = path.resolve(
     import.meta.dirname,
@@ -39,13 +44,24 @@ export function migrate(
     "template-vitepress",
   );
 
+  // Set the destination directory where the source files are located
+  // By default, it is configured with an i18n structure
+  const destSrcPath = path.join(
+    bookConfig?.book?.language ?? "en",
+    bookConfig?.book?.src,
+  );
+
   const complileTemplateConfig = (content: string) => {
+    const config = { ...(bookConfig ?? {}), ...DEFAULT_BOOK_CONFIG };
     const mapping = {
-      bookConfig,
-      title: bookConfig.book.title,
-      description: bookConfig.book.description,
-      lang: bookConfig.book.language,
-      sidebar: parseSummaryMd(resolvedSourcePath, bookConfig),
+      bookConfig: config,
+      title: config?.book?.title,
+      description: config?.book?.description,
+      lang: config?.book?.language,
+      sidebar: parseSummaryMd(
+        path.resolve(resolvedSourcePath, bookConfig?.book?.src),
+        `/${destSrcPath}`,
+      ),
     };
     const lines = content.split("\n");
     return lines
@@ -54,6 +70,7 @@ export function migrate(
       .join("\n");
   };
 
+  // Copy the template-vitepress directory and compile configuration file
   copyDir(
     templatePath,
     resolvedDestPath,
@@ -68,6 +85,27 @@ export function migrate(
       }
     },
   );
+
+  // Copy source files
+  copyDir(
+    path.resolve(resolvedSourcePath, bookConfig.book.src),
+    // Keep the original directory structure
+    path.resolve(resolvedDestPath, destSrcPath),
+    (filepath: string, _destpath: string) => {
+      fs.copyFileSync(filepath, _destpath);
+    },
+  );
+
+  const includingFilesDir = options?.includingFilesDir;
+  if (includingFilesDir) {
+    copyDir(
+      path.resolve(resolvedSourcePath, includingFilesDir),
+      path.resolve(resolvedDestPath, destSrcPath, "..", includingFilesDir),
+      (filepath: string, _destpath: string) => {
+        fs.copyFileSync(filepath, _destpath);
+      },
+    );
+  }
 }
 
 function copyDir(

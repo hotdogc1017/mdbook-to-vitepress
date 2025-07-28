@@ -13,7 +13,7 @@ export default defineConfig({
       md.use(mdBookPlugin, {
         // @ts-expect-error
         ...bookConfig,
-        getRelativePath: (env: MarkdownEnv) => {
+        getRelatedPath: (env: MarkdownEnv) => {
           const { realPath, path: _path } = env;
           return path.dirname(realPath ?? _path);
         },
