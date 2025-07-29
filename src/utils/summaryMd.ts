@@ -48,7 +48,7 @@ export function extractChaptersToSidebar(
     ) {
       return chapters.map(({ items, _level, ...rest }) => ({
         ...rest,
-        link: `${baseDir}/${rest.link}`,
+        link: baseDir ? `${baseDir}/${rest.link}` : rest.link,
       }));
     }
     const minLevel = Math.min(...chapters.map(({ _level }) => _level));
@@ -68,7 +68,7 @@ export function extractChaptersToSidebar(
       const { _level, ...rest } = chapter;
       return {
         ...rest,
-        link: `${baseDir}/${rest.link}`,
+        link: baseDir ? `${baseDir}/${rest.link}` : rest.link,
         items: group(chapter.items),
       };
     });

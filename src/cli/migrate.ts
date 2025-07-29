@@ -44,29 +44,31 @@ export function migrate(
     "template-vitepress",
   );
 
+  const LANG = bookConfig?.book?.language ?? "en";
+
   // Set the destination directory where the source files are located
   // By default, it is configured with an i18n structure
-  const destSrcPath = path.join(
-    bookConfig?.book?.language ?? "en",
-    bookConfig?.book?.src,
-  );
+  const destSrcPath = path.join(LANG, bookConfig?.book?.src);
 
   const complileTemplateConfig = (content: string) => {
+    const baseUrl = `${destSrcPath}`;
     const config = { ...(bookConfig ?? {}), ...DEFAULT_BOOK_CONFIG };
     const mapping = {
       bookConfig: config,
       title: config?.book?.title,
       description: config?.book?.description,
-      lang: config?.book?.language,
+      lang: LANG,
+      baseUrl,
       sidebar: parseSummaryMd(
         path.resolve(resolvedSourcePath, bookConfig?.book?.src),
-        `/${destSrcPath}`,
+        LANG,
       ),
     };
     const lines = content.split("\n");
     return lines
       .filter((line) => !/\s*\/\/ @ts-expect-error\s*/.test(line))
       .map((line) => fillRegion(line, mapping))
+      .map((line) => fillRegionWithString(line, mapping))
       .join("\n");
   };
 
@@ -92,7 +94,20 @@ export function migrate(
     // Keep the original directory structure
     path.resolve(resolvedDestPath, destSrcPath),
     (filepath: string, _destpath: string) => {
-      fs.copyFileSync(filepath, _destpath);
+      const content = fs.readFileSync(filepath, { encoding: "utf-8" });
+      const RE = /^([\s\S]*<img.*)(?:src=\"([^\"]*))(.*\/>[\s\S]*)$/g;
+      if (RE.test(content)) {
+        const replacedContent = content.replace(RE, (entire, p1, url, p2) => {
+          if (!/^\.?\//.test(url)) {
+            return p1 + `src="./${url}` + p2;
+          } else {
+            return entire;
+          }
+        });
+        fs.writeFileSync(_destpath, replacedContent, { encoding: "utf-8" });
+      } else {
+        fs.copyFileSync(filepath, _destpath);
+      }
     },
   );
 
@@ -137,16 +152,34 @@ function copyDir(
   }
 }
 
+// For object
 function fillRegion(input: string, regionMapping: Record<string, any> = {}) {
-  const RE = /\"__@(.*)__\"/;
+  const RE = /\"__@([a-zA-Z0-9]*)__\"/g;
   const [, region] = RE.exec(input) || [];
 
   let result = input;
   if (Object.keys(regionMapping).includes(region)) {
-    result = input.replace(
-      RE,
-      util.inspect(regionMapping[region], { depth: null }),
-    );
+    result = input.replace(RE, (_, region) => {
+      return util.inspect(regionMapping[region], { depth: null });
+    });
+  }
+
+  return result;
+}
+
+// For string
+function fillRegionWithString(
+  input: string,
+  regionMapping: Record<string, any> = {},
+) {
+  const RE = /__#([a-zA-Z0-9]*)__/g;
+  const [, region] = RE.exec(input) || [];
+
+  let result = input;
+  if (Object.keys(regionMapping).includes(region)) {
+    result = input.replace(RE, (_, region) => {
+      return regionMapping[region];
+    });
   }
 
   return result;
