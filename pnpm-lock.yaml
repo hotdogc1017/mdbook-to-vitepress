@@ -22,11 +22,14 @@ importers:
         specifier: ^10.2.0
         version: 10.2.0
       markdown-it-mdbook:
-        specifier: file:../markdown-it-mdbook
-        version: file:../markdown-it-mdbook
+        specifier: latest
+        version: 0.1.1
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
+      pnpm:
+        specifier: ^10.13.1
+        version: 10.13.1
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1023,9 +1026,6 @@ packages:
   markdown-it-mdbook@0.1.1:
     resolution: {integrity: sha512-/EYnwy/gvS4PfItpFFgiy/ncjy4WGadfRYR5TcJ9whCuTunoXQUup8TeE1xKwq0xSJBG96PQj8UqnDSPBaLjNg==}
 
-  markdown-it-mdbook@file:../markdown-it-mdbook:
-    resolution: {directory: ../markdown-it-mdbook, type: directory}
-
   mdast-util-to-hast@13.2.0:
     resolution: {integrity: sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==}
 
@@ -1113,6 +1113,11 @@ packages:
 
   pkg-types@2.2.0:
     resolution: {integrity: sha512-2SM/GZGAEkPp3KWORxQZns4M+WSeXbC2HEvmOIJe3Cmiv6ieAJvdVhDldtHqM5J1Y7MrR1XhkBT/rMlhh9FdqQ==}
+
+  pnpm@10.13.1:
+    resolution: {integrity: sha512-N+vxpcejDV+r4MXfRO6NpMllygxa89urKMOhaBtwolYhjQXIHJwNz3Z+9rhVHrW5YAQrntQwDFkkIzY3fgHPrQ==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
@@ -2351,8 +2356,6 @@ snapshots:
 
   markdown-it-mdbook@0.1.1: {}
 
-  markdown-it-mdbook@file:../markdown-it-mdbook: {}
-
   mdast-util-to-hast@13.2.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -2440,6 +2443,8 @@ snapshots:
       confbox: 0.2.2
       exsolve: 1.0.7
       pathe: 2.0.3
+
+  pnpm@10.13.1: {}
 
   postcss@8.5.6:
     dependencies:

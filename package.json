@@ -16,10 +16,11 @@
   },
   "scripts": {
     "dev": "tsdown -w",
-    "build": "tsdown",
+    "build": "tsdown --minify",
     "bump": "bumpp --sign",
     "gen": "rimraf .output && node dist/index.js -i listing template-mdbook .output",
-    "dev:gen": "pnpm -C .output install && pnpm -C .output dev"
+    "dev:gen": "pnpm -C .output install && pnpm -C .output dev",
+    "pub": "pnpm build && pnpm publish"
   },
   "dependencies": {
     "commander": "^11.0.0",
@@ -30,6 +31,7 @@
     "bumpp": "^10.2.0",
     "markdown-it-mdbook": "latest",
     "picocolors": "^1.1.1",
+    "pnpm": "^10.13.1",
     "rimraf": "^6.0.1",
     "tsdown": "^0.13.0",
     "vitepress": "^1.6.3",
