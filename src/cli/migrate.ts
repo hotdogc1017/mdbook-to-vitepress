@@ -9,6 +9,7 @@ import {
   type BookConfig,
 } from "@/utils/bookToml";
 import { parseSummaryMd } from "@/utils/summaryMd";
+import deepmerge from "deepmerge";
 
 interface MigrationOptions {
   /**
@@ -20,8 +21,8 @@ interface MigrationOptions {
 const cwd = process.cwd();
 
 export function migrate(
-  sourcePath: string,
   destPath: string,
+  sourcePath: string,
   options?: MigrationOptions,
 ): void {
   if (!destPath) {
@@ -36,7 +37,7 @@ export function migrate(
     process.exit(1);
   }
 
-  const bookConfig = { ...DEFAULT_BOOK_CONFIG, ...parseBookToml(sourcePath) };
+  const bookConfig = deepmerge(DEFAULT_BOOK_CONFIG, parseBookToml(sourcePath));
 
   const templatePath = path.resolve(
     import.meta.dirname,
