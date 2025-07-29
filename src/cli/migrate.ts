@@ -96,11 +96,11 @@ export function migrate(
     path.resolve(resolvedDestPath, destSrcPath),
     (filepath: string, _destpath: string) => {
       const content = fs.readFileSync(filepath, { encoding: "utf-8" });
-      const RE = /^([\s\S]*<img.*)(?:src=\"([^\"]*))(.*\/>[\s\S]*)$/g;
+      const RE = /src=\"([^\"]*)/g;
       if (RE.test(content)) {
-        const replacedContent = content.replace(RE, (entire, p1, url, p2) => {
+        const replacedContent = content.replace(RE, (entire, url) => {
           if (!/^\.?\//.test(url)) {
-            return p1 + `src="./${url}` + p2;
+            return `src="./${url}`;
           } else {
             return entire;
           }
