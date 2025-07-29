@@ -7,5 +7,4 @@ export default defineConfig({
     "~/*": import.meta.dirname,
     "@": path.join(import.meta.dirname, "./src"),
   },
-  external: ["commander", "yaml", "fs-extra", "vitepress"],
 });

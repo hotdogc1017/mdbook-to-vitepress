@@ -7,13 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      commander:
-        specifier: ^11.0.0
-        version: 11.1.0
-      confbox:
-        specifier: ^0.2.2
-        version: 0.2.2
     devDependencies:
       '@types/node':
         specifier: ^22.16.5
@@ -21,9 +14,18 @@ importers:
       bumpp:
         specifier: ^10.2.0
         version: 10.2.0
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
+      confbox:
+        specifier: ^0.2.2
+        version: 0.2.2
+      deepmerge:
+        specifier: ^4.3.1
+        version: 4.3.1
       markdown-it-mdbook:
         specifier: latest
-        version: 0.1.1
+        version: 0.1.2
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -47,7 +49,7 @@ importers:
     dependencies:
       markdown-it-mdbook:
         specifier: latest
-        version: 0.1.1
+        version: 0.1.2
       vitepress:
         specifier: latest
         version: 1.6.3(@algolia/client-search@5.34.1)(@types/node@22.16.5)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.8.3)
@@ -861,6 +863,10 @@ packages:
     resolution: {integrity: sha512-h5k/5U50IJJFpzfL6nO9jaaumfjO/f2NjK/oYB2Djzm4p9L+3T9qWpZqZ2hAbLPuuYq9wrU08WQyBTL5GbPk5Q==}
     engines: {node: '>=6'}
 
+  deepmerge@4.3.1:
+    resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
+    engines: {node: '>=0.10.0'}
+
   defu@6.1.4:
     resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
 
@@ -1023,8 +1029,8 @@ packages:
   mark.js@8.11.1:
     resolution: {integrity: sha512-1I+1qpDt4idfgLQG+BNWmrqku+7/2bi5nLf4YwF8y8zXvmfiTBY3PV3ZibfrjBueCByROpuBjLLFCajqkgYoLQ==}
 
-  markdown-it-mdbook@0.1.1:
-    resolution: {integrity: sha512-/EYnwy/gvS4PfItpFFgiy/ncjy4WGadfRYR5TcJ9whCuTunoXQUup8TeE1xKwq0xSJBG96PQj8UqnDSPBaLjNg==}
+  markdown-it-mdbook@0.1.2:
+    resolution: {integrity: sha512-PN3ev+HWFnVO6zabl5Wt7yCaLX8/+XiOMWP+7kmV9WYFxf/ahIxf7nUzu6HDG12My9hS+8QjTWj86L265ZVl6g==}
 
   mdast-util-to-hast@13.2.0:
     resolution: {integrity: sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==}
@@ -2198,6 +2204,8 @@ snapshots:
 
   deep-eql@5.0.2: {}
 
+  deepmerge@4.3.1: {}
+
   defu@6.1.4: {}
 
   dequal@2.0.3: {}
@@ -2354,7 +2362,7 @@ snapshots:
 
   mark.js@8.11.1: {}
 
-  markdown-it-mdbook@0.1.1: {}
+  markdown-it-mdbook@0.1.2: {}
 
   mdast-util-to-hast@13.2.0:
     dependencies:

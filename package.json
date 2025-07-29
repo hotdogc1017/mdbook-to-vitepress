@@ -18,23 +18,22 @@
     "dev": "tsdown -w",
     "build": "tsdown --minify",
     "bump": "bumpp --sign",
-    "gen": "rimraf .output && node dist/index.js -i listing template-mdbook .output",
+    "gen": "rimraf .output && node dist/index.js -i listing .output template-mdbook",
     "dev:gen": "pnpm -C .output install && pnpm -C .output dev",
     "pub": "pnpm build && pnpm publish"
-  },
-  "dependencies": {
-    "commander": "^11.0.0",
-    "confbox": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "^22.16.5",
     "bumpp": "^10.2.0",
+    "deepmerge": "^4.3.1",
     "markdown-it-mdbook": "latest",
     "picocolors": "^1.1.1",
     "pnpm": "^10.13.1",
     "rimraf": "^6.0.1",
     "tsdown": "^0.13.0",
     "vitepress": "^1.6.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "commander": "^11.0.0",
+    "confbox": "^0.2.2"
   }
 }
