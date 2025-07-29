@@ -48,8 +48,8 @@ importers:
   .output:
     dependencies:
       markdown-it-mdbook:
-        specifier: latest
-        version: 0.1.2
+        specifier: ../../markdown-it-mdbook
+        version: link:../../markdown-it-mdbook
       vitepress:
         specifier: latest
         version: 1.6.3(@algolia/client-search@5.34.1)(@types/node@22.16.5)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.8.3)
