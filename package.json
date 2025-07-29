@@ -18,7 +18,7 @@
     "dev": "tsdown -w",
     "build": "tsdown",
     "bump": "bumpp --sign",
-    "gen": "rimraf .output && node dist/index.js -i listing template-mdbook .output ",
+    "gen": "rimraf .output && node dist/index.js -i listing template-mdbook .output",
     "dev:gen": "pnpm -C .output install && pnpm -C .output dev"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/node": "^22.16.5",
     "bumpp": "^10.2.0",
-    "markdown-it-mdbook": "file:../markdown-it-mdbook",
+    "markdown-it-mdbook": "latest",
     "picocolors": "^1.1.1",
     "rimraf": "^6.0.1",
     "tsdown": "^0.13.0",
